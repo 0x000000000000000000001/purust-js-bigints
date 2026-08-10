@@ -1,0 +1,23 @@
+package:
+  name: js-bigints
+  dependencies:
+    - maybe
+    - prelude
+    - integers
+  test:
+    main: Test.Main
+    dependencies:
+      - effect
+      - console
+workspace:
+  packageSet:
+    registry: 77.7.0
+  extraPackages:
+    prelude:
+      path: "../purust-prelude"
+    effect:
+      path: "../purust-effect"
+    console:
+      path: "../purust-console"
+    integers:
+      path: "../purust-integers"
