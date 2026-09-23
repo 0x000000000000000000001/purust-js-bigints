@@ -1,23 +1,36 @@
 package:
   name: js-bigints
   dependencies:
+    - integers
     - maybe
     - prelude
-    - integers
   test:
     main: Test.Main
     dependencies:
-      - effect
+      - assert
       - console
+      - effect
+
 workspace:
+  backend:
+    cmd: ../purust/bin/purust
+    args: [--main, Test.Main, --source, output, --out, output/purust_output]
   packageSet:
-    registry: 77.7.0
+    registry: 77.10.1
   extraPackages:
-    prelude:
-      path: "../purust-prelude"
-    effect:
-      path: "../purust-effect"
+    assert:
+      path: ../purust-assert
     console:
-      path: "../purust-console"
+      path: ../purust-console
+    effect:
+      path: ../purust-effect
+    functions:
+      path: ../purust-functions
     integers:
-      path: "../purust-integers"
+      path: ../purust-integers
+    numbers:
+      path: ../purust-numbers
+    prelude:
+      path: ../purust-prelude
+    unsafe-coerce:
+      path: ../purust-unsafe-coerce

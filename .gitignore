@@ -10,3 +10,4 @@ output.bak/
 /.psa*
 /.spago
 /package-lock.json
+.purmeta/
