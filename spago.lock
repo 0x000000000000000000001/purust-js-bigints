@@ -12,9 +12,18 @@
         },
         "test": {
           "dependencies": [
+            "arrays",
             "assert",
             "console",
-            "effect"
+            "effect",
+            "foldable-traversable",
+            "integers",
+            "maybe",
+            "newtype",
+            "partial",
+            "prelude",
+            "quickcheck",
+            "quickcheck-laws"
           ]
         }
       }
@@ -668,14 +677,47 @@
       }
     },
     "extra_packages": {
+      "aff": {
+        "path": "../purust-aff"
+      },
+      "argonaut-core": {
+        "path": "../purust-argonaut-core"
+      },
+      "arrays": {
+        "path": "../purust-arrays"
+      },
       "assert": {
         "path": "../purust-assert"
+      },
+      "avar": {
+        "path": "../purust-avar"
+      },
+      "catenable-lists": {
+        "path": "../purust-catenable-lists"
       },
       "console": {
         "path": "../purust-console"
       },
+      "datetime": {
+        "path": "../purust-datetime"
+      },
       "effect": {
         "path": "../purust-effect"
+      },
+      "enums": {
+        "path": "../purust-enums"
+      },
+      "exceptions": {
+        "path": "../purust-exceptions"
+      },
+      "foldable-traversable": {
+        "path": "../purust-foldable-traversable"
+      },
+      "foreign": {
+        "path": "../purust-foreign"
+      },
+      "foreign-object": {
+        "path": "../purust-foreign-object"
       },
       "functions": {
         "path": "../purust-functions"
@@ -683,18 +725,116 @@
       "integers": {
         "path": "../purust-integers"
       },
+      "js-promise": {
+        "path": "../purust-js-promise"
+      },
+      "js-promise-aff": {
+        "path": "../purust-js-promise-aff"
+      },
+      "js-uri": {
+        "path": "../purust-js-uri"
+      },
+      "lazy": {
+        "path": "../purust-lazy"
+      },
+      "node-event-emitter": {
+        "path": "../purust-node-event-emitter"
+      },
+      "node-fs": {
+        "path": "../purust-node-fs"
+      },
+      "node-http": {
+        "path": "../purust-node-http"
+      },
+      "node-net": {
+        "path": "../purust-node-net"
+      },
+      "node-path": {
+        "path": "../purust-node-path"
+      },
+      "node-process": {
+        "path": "../purust-node-process"
+      },
+      "node-streams": {
+        "path": "../purust-node-streams"
+      },
+      "now": {
+        "path": "../purust-now"
+      },
+      "nullable": {
+        "path": "../purust-nullable"
+      },
       "numbers": {
         "path": "../purust-numbers"
+      },
+      "partial": {
+        "path": "../purust-partial"
       },
       "prelude": {
         "path": "../purust-prelude"
       },
+      "quickcheck": {
+        "path": "../purust-quickcheck"
+      },
+      "random": {
+        "path": "../purust-random"
+      },
+      "record": {
+        "path": "../purust-record"
+      },
+      "refs": {
+        "path": "../purust-refs"
+      },
+      "run": {
+        "path": "../purust-run"
+      },
+      "spec": {
+        "path": "../purust-spec"
+      },
+      "st": {
+        "path": "../purust-st"
+      },
+      "strings": {
+        "path": "../purust-strings"
+      },
+      "unfoldable": {
+        "path": "../purust-unfoldable"
+      },
       "unsafe-coerce": {
         "path": "../purust-unsafe-coerce"
+      },
+      "uuid": {
+        "path": "../purust-uuid"
+      },
+      "variant": {
+        "path": "../purust-variant"
+      },
+      "yoga-json": {
+        "path": "../purust-yoga-json"
       }
     }
   },
   "packages": {
+    "arrays": {
+      "type": "local",
+      "path": "../purust-arrays",
+      "dependencies": [
+        "bifunctors",
+        "control",
+        "foldable-traversable",
+        "functions",
+        "maybe",
+        "nonempty",
+        "partial",
+        "prelude",
+        "safe-coerce",
+        "st",
+        "tailrec",
+        "tuples",
+        "unfoldable",
+        "unsafe-coerce"
+      ]
+    },
     "assert": {
       "type": "local",
       "path": "../purust-assert",
@@ -704,12 +844,46 @@
         "prelude"
       ]
     },
+    "bifunctors": {
+      "type": "registry",
+      "version": "6.1.0",
+      "integrity": "sha256-CvZRb8uI75eKIqiYntR+k05Wk6tKlMS5w8sCA2AFna0=",
+      "dependencies": [
+        "const",
+        "either",
+        "newtype",
+        "prelude",
+        "tuples"
+      ]
+    },
     "console": {
       "type": "local",
       "path": "../purust-console",
       "dependencies": [
         "effect",
         "prelude"
+      ]
+    },
+    "const": {
+      "type": "registry",
+      "version": "6.0.0",
+      "integrity": "sha256-S+m0lQsxnji0z1XRUmkn+3RFuWJ5CXWuIr1u3i8Bfoc=",
+      "dependencies": [
+        "invariant",
+        "newtype",
+        "prelude"
+      ]
+    },
+    "contravariant": {
+      "type": "registry",
+      "version": "6.0.0",
+      "integrity": "sha256-nuckEWqL80NaPmR/l9AUyrfycNh18XcvlZV9PAamwqc=",
+      "dependencies": [
+        "const",
+        "either",
+        "newtype",
+        "prelude",
+        "tuples"
       ]
     },
     "control": {
@@ -721,6 +895,18 @@
         "prelude"
       ]
     },
+    "distributive": {
+      "type": "registry",
+      "version": "6.0.0",
+      "integrity": "sha256-netyJK4B32PDYHD0tF2AenKgo3urzbI770ycM0pArAo=",
+      "dependencies": [
+        "identity",
+        "newtype",
+        "prelude",
+        "tuples",
+        "type-equality"
+      ]
+    },
     "effect": {
       "type": "local",
       "path": "../purust-effect",
@@ -728,10 +914,120 @@
         "prelude"
       ]
     },
+    "either": {
+      "type": "registry",
+      "version": "6.1.0",
+      "integrity": "sha256-tBHx3PgtH4GZOApZCDkcM7szRTYJinrUrVGWazQCUUg=",
+      "dependencies": [
+        "control",
+        "invariant",
+        "maybe",
+        "prelude"
+      ]
+    },
+    "enums": {
+      "type": "local",
+      "path": "../purust-enums",
+      "dependencies": [
+        "control",
+        "either",
+        "gen",
+        "maybe",
+        "newtype",
+        "nonempty",
+        "partial",
+        "prelude",
+        "tuples",
+        "unfoldable"
+      ]
+    },
+    "exceptions": {
+      "type": "local",
+      "path": "../purust-exceptions",
+      "dependencies": [
+        "effect",
+        "either",
+        "maybe",
+        "prelude"
+      ]
+    },
+    "exists": {
+      "type": "registry",
+      "version": "6.0.0",
+      "integrity": "sha256-vtLbrWNaI+pzx/2fw2AQnCovoLtcosClIhjO26QKkh8=",
+      "dependencies": [
+        "unsafe-coerce"
+      ]
+    },
+    "foldable-traversable": {
+      "type": "local",
+      "path": "../purust-foldable-traversable",
+      "dependencies": [
+        "bifunctors",
+        "const",
+        "control",
+        "either",
+        "functors",
+        "identity",
+        "maybe",
+        "newtype",
+        "orders",
+        "prelude",
+        "tuples"
+      ]
+    },
     "functions": {
       "type": "local",
       "path": "../purust-functions",
       "dependencies": [
+        "prelude"
+      ]
+    },
+    "functors": {
+      "type": "registry",
+      "version": "5.0.0",
+      "integrity": "sha256-W1o/4wcp6S3chodYL8uixlXK2mfr1L+SzM1R+whqUco=",
+      "dependencies": [
+        "bifunctors",
+        "const",
+        "contravariant",
+        "control",
+        "distributive",
+        "either",
+        "invariant",
+        "maybe",
+        "newtype",
+        "prelude",
+        "profunctor",
+        "tuples",
+        "unsafe-coerce"
+      ]
+    },
+    "gen": {
+      "type": "registry",
+      "version": "4.0.0",
+      "integrity": "sha256-kyOateeOtQa07vfTMYeSuCKdelgKE1R65fwKkZ10wsY=",
+      "dependencies": [
+        "either",
+        "foldable-traversable",
+        "identity",
+        "maybe",
+        "newtype",
+        "nonempty",
+        "prelude",
+        "tailrec",
+        "tuples",
+        "unfoldable"
+      ]
+    },
+    "identity": {
+      "type": "registry",
+      "version": "6.0.0",
+      "integrity": "sha256-RY/iXPpxpqvKHYfJeFVNI1J06kohB9rbtWYuha8t0LE=",
+      "dependencies": [
+        "control",
+        "invariant",
+        "newtype",
         "prelude"
       ]
     },
@@ -751,6 +1047,48 @@
       "dependencies": [
         "control",
         "prelude"
+      ]
+    },
+    "lazy": {
+      "type": "local",
+      "path": "../purust-lazy",
+      "dependencies": [
+        "control",
+        "foldable-traversable",
+        "prelude"
+      ]
+    },
+    "lcg": {
+      "type": "registry",
+      "version": "4.0.0",
+      "integrity": "sha256-bUYyfXYmjTn7zSpj2hTiePywzsuD80fCjkonsrpdGOw=",
+      "dependencies": [
+        "effect",
+        "integers",
+        "maybe",
+        "numbers",
+        "partial",
+        "prelude",
+        "random"
+      ]
+    },
+    "lists": {
+      "type": "registry",
+      "version": "7.0.0",
+      "integrity": "sha256-/mGd7wLoU+wsTcqii7SSUByxsvwvjnu2PjwAD47yYb4=",
+      "dependencies": [
+        "bifunctors",
+        "control",
+        "foldable-traversable",
+        "lazy",
+        "maybe",
+        "newtype",
+        "nonempty",
+        "partial",
+        "prelude",
+        "tailrec",
+        "tuples",
+        "unfoldable"
       ]
     },
     "maybe": {
@@ -773,6 +1111,19 @@
         "safe-coerce"
       ]
     },
+    "nonempty": {
+      "type": "registry",
+      "version": "7.0.0",
+      "integrity": "sha256-Ctkq8/+KiGqCE53Y/LvibA/coy7ev9HtRZU+GYS7yfQ=",
+      "dependencies": [
+        "control",
+        "foldable-traversable",
+        "maybe",
+        "prelude",
+        "tuples",
+        "unfoldable"
+      ]
+    },
     "numbers": {
       "type": "local",
       "path": "../purust-numbers",
@@ -781,10 +1132,117 @@
         "maybe"
       ]
     },
+    "orders": {
+      "type": "registry",
+      "version": "6.0.0",
+      "integrity": "sha256-nSMxZK7wxyDULkjZqvMyB71mVo6b0AyLLHosDVbv1XM=",
+      "dependencies": [
+        "newtype",
+        "prelude"
+      ]
+    },
+    "partial": {
+      "type": "local",
+      "path": "../purust-partial",
+      "dependencies": []
+    },
     "prelude": {
       "type": "local",
       "path": "../purust-prelude",
       "dependencies": []
+    },
+    "profunctor": {
+      "type": "registry",
+      "version": "6.0.1",
+      "integrity": "sha256-Ow0mJC+PIIRq/a3mzCWY5vxuTgR/e+Ee68+mWeSRnWY=",
+      "dependencies": [
+        "control",
+        "distributive",
+        "either",
+        "exists",
+        "invariant",
+        "newtype",
+        "prelude",
+        "tuples"
+      ]
+    },
+    "quickcheck": {
+      "type": "local",
+      "path": "../purust-quickcheck",
+      "dependencies": [
+        "arrays",
+        "console",
+        "control",
+        "effect",
+        "either",
+        "enums",
+        "exceptions",
+        "foldable-traversable",
+        "gen",
+        "identity",
+        "integers",
+        "lazy",
+        "lcg",
+        "lists",
+        "maybe",
+        "newtype",
+        "nonempty",
+        "numbers",
+        "partial",
+        "prelude",
+        "record",
+        "st",
+        "strings",
+        "tailrec",
+        "transformers",
+        "tuples",
+        "unfoldable"
+      ]
+    },
+    "quickcheck-laws": {
+      "type": "registry",
+      "version": "7.0.0",
+      "integrity": "sha256-hDd4Q99TNlEz9sU0Cssm7n6+BswAq69HL8KqNP5UKOU=",
+      "dependencies": [
+        "arrays",
+        "console",
+        "control",
+        "effect",
+        "enums",
+        "foldable-traversable",
+        "maybe",
+        "newtype",
+        "prelude",
+        "quickcheck"
+      ]
+    },
+    "random": {
+      "type": "local",
+      "path": "../purust-random",
+      "dependencies": [
+        "effect",
+        "integers",
+        "maybe",
+        "numbers",
+        "prelude"
+      ]
+    },
+    "record": {
+      "type": "local",
+      "path": "../purust-record",
+      "dependencies": [
+        "functions",
+        "prelude",
+        "unsafe-coerce"
+      ]
+    },
+    "refs": {
+      "type": "local",
+      "path": "../purust-refs",
+      "dependencies": [
+        "effect",
+        "prelude"
+      ]
     },
     "safe-coerce": {
       "type": "registry",
@@ -792,6 +1250,102 @@
       "integrity": "sha256-EJrxtKt5xC7TYjBZrSBO/J7Aw3DmtilYjt4olpAXWVc=",
       "dependencies": [
         "unsafe-coerce"
+      ]
+    },
+    "st": {
+      "type": "local",
+      "path": "../purust-st",
+      "dependencies": [
+        "partial",
+        "prelude",
+        "tailrec",
+        "unsafe-coerce"
+      ]
+    },
+    "strings": {
+      "type": "local",
+      "path": "../purust-strings",
+      "dependencies": [
+        "arrays",
+        "control",
+        "either",
+        "enums",
+        "foldable-traversable",
+        "gen",
+        "integers",
+        "maybe",
+        "newtype",
+        "nonempty",
+        "partial",
+        "prelude",
+        "tailrec",
+        "tuples",
+        "unfoldable",
+        "unsafe-coerce"
+      ]
+    },
+    "tailrec": {
+      "type": "registry",
+      "version": "6.1.0",
+      "integrity": "sha256-xrorCfP0xV1wubs27idQCHQqdvSUuqmmL/am7Ji1wVU=",
+      "dependencies": [
+        "bifunctors",
+        "effect",
+        "either",
+        "identity",
+        "maybe",
+        "partial",
+        "prelude",
+        "refs"
+      ]
+    },
+    "transformers": {
+      "type": "registry",
+      "version": "6.1.0",
+      "integrity": "sha256-QJmgNT/y7ljPHSsXaW4zxF/982BFiQ90KNL1g/NtEOQ=",
+      "dependencies": [
+        "control",
+        "distributive",
+        "effect",
+        "either",
+        "exceptions",
+        "foldable-traversable",
+        "identity",
+        "lazy",
+        "maybe",
+        "newtype",
+        "prelude",
+        "st",
+        "tailrec",
+        "tuples",
+        "unfoldable"
+      ]
+    },
+    "tuples": {
+      "type": "registry",
+      "version": "7.0.0",
+      "integrity": "sha256-BKy7EfK8S1KeTCwyWqyW1wwcpSAQuh3IsczSVgS6fzY=",
+      "dependencies": [
+        "control",
+        "invariant",
+        "prelude"
+      ]
+    },
+    "type-equality": {
+      "type": "registry",
+      "version": "4.0.1",
+      "integrity": "sha256-BBqYOSnAKmayRvR5mtZoCf4SlYs2ipatD/+5nQx73aw=",
+      "dependencies": []
+    },
+    "unfoldable": {
+      "type": "local",
+      "path": "../purust-unfoldable",
+      "dependencies": [
+        "foldable-traversable",
+        "maybe",
+        "partial",
+        "prelude",
+        "tuples"
       ]
     },
     "unsafe-coerce": {

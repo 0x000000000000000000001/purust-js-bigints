@@ -1,14 +1,75 @@
 module Test.Main where
 
-import Prelude
+import Prelude hiding (not)
 
+import Data.Array (foldMap)
+import Data.Array.NonEmpty (cons')
+import Data.Foldable (fold)
 import Data.Int (base36)
-import Data.Maybe (Maybe(..), isJust, isNothing)
+import Data.Maybe (Maybe(..), fromJust, fromMaybe, isJust, isNothing)
+import Data.Monoid.Conj (Conj(..))
+import Data.Newtype (un)
+import Data.Ord (abs)
 import Effect (Effect)
 import Effect.Console (log)
 import JS.BigInt (BigInt, and, asIntN, asUintN, binary, decimal, even, fromInt, fromNumber, fromString, fromStringAs, fromTLInt, hexadecimal, not, octal, odd, or, pow, shl, shr, toInt, toNumber, toString, toStringAs, xor)
+import Partial.Unsafe (unsafePartial)
 import Test.Assert (assert)
+import Test.QuickCheck (quickCheck)
+import Test.QuickCheck.Arbitrary (class Arbitrary)
+import Test.QuickCheck.Gen (Gen, arrayOf, chooseInt, elements, resize)
+import Test.QuickCheck.Laws.Data as Data
 import Type.Proxy (Proxy(..))
+
+-- | Newtype with an Arbitrary instance that generates only small integers
+newtype SmallInt = SmallInt Int
+
+instance Arbitrary SmallInt where
+  arbitrary = SmallInt <$> chooseInt (-5) 5
+
+runSmallInt :: SmallInt -> Int
+runSmallInt (SmallInt n) = n
+
+-- | Arbitrary instance for BigInt
+newtype TestBigInt = TestBigInt BigInt
+
+derive newtype instance Eq TestBigInt
+derive newtype instance Ord TestBigInt
+derive newtype instance Semiring TestBigInt
+derive newtype instance Ring TestBigInt
+derive newtype instance CommutativeRing TestBigInt
+derive newtype instance EuclideanRing TestBigInt
+
+instance Arbitrary TestBigInt where
+  arbitrary = testBigIntGen 100
+
+-- | The generated digit strings are bounded by the requested size.
+testBigIntGen :: Int -> Gen TestBigInt
+testBigIntGen bound = do
+  n <- (fromMaybe zero <<< fromString) <$> digitString
+  op <- elements (cons' identity [ negate ])
+  pure (TestBigInt (op n))
+  where
+  digits :: Gen Int
+  digits = chooseInt 0 9
+
+  digitString :: Gen String
+  digitString = (fold <<< map show) <$> (resize bound $ arrayOf digits)
+
+-- | Convert SmallInt to BigInt
+fromSmallInt :: SmallInt -> BigInt
+fromSmallInt = fromInt <<< runSmallInt
+
+-- | Test if a binary relation holds before and after converting to BigInt.
+testBinary
+  :: (BigInt -> BigInt -> BigInt)
+  -> (Int -> Int -> Int)
+  -> Effect Unit
+testBinary f g = quickCheck (\x y -> (fromInt x) `f` (fromInt y) == fromInt (x `g` y))
+
+-- The 256-bit fixture must come from the parser, not from a silent fallback.
+maxUint256 :: BigInt
+maxUint256 = unsafePartial $ fromJust $ fromString "115792089237316195423570985008687907853269984665640564039457584007913129639935"
 
 main :: Effect Unit
 main = do
@@ -28,6 +89,13 @@ main = do
   assert $ fromString "" == Just zero
   assert $ fromString "123456789" == Just (fromInt 123456789)
   assert $ fromString "10000000" == Just (fromInt 10000000)
+  quickCheck $ \(TestBigInt a) -> (fromString <<< toString) a == Just a
+
+  quickCheck $ \(TestBigInt a) ->
+    let radixes = [binary, octal, decimal, hexadecimal, base36]
+    in un Conj $ flip foldMap radixes $ \r ->
+          Conj $ (fromStringAs r $ toStringAs r a) == Just a
+
   assert $ fromString "0b100" == Just four
   assert $ fromString "0o755" == Just (fromInt 493)
   assert $ fromString "0xff" == fromString "255"
@@ -62,7 +130,12 @@ main = do
   assert $ roundTrip (fromInt 0)
   assert $ roundTrip (fromInt 42)
   assert $ roundTrip (fromInt (-42))
-  assert $ roundTrip (fromString' "115792089237316195423570985008687907853269984665640564039457584007913129639935")
+  assert $ roundTrip maxUint256
+
+  log "Conversions between String, Int and BigInt should not loose precision"
+  quickCheck (\n -> fromString (show n) == Just (fromInt n))
+  assert $ toStringAs binary (fromInt 9) == "1001"
+  assert $ toStringAs octal (fromInt 10) == "12"
 
   log "Conversions between Number and BigInt"
   assert $ fromNumber 42.0 == Just (fromInt 42)
@@ -72,16 +145,29 @@ main = do
   assert $ toNumber (fromInt 42) == 42.0
   assert $ toString (fromInt 9) == "9"
 
-  log "It should perform multiplications which would lead to imprecise results using Number"
-  assert $ Just (fromInt 333190782 * fromInt 1103515245) == fromString "367681107430471590"
+  log "Binary relations between integers should hold before and after converting to BigInt"
+  testBinary (+) (+)
+  testBinary (-) (-)
+  testBinary mod mod
+  testBinary (/) (/)
 
   log "Can parse 256 bit numbers"
   assert $ isJust $ fromString "115792089237316195423570985008687907853269984665640564039457584007913129639935"
   assert $ isJust $ fromStringAs hexadecimal "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0cbf"
 
+  -- To test the multiplication, we need to make sure that Int does not overflow
+  quickCheck (\x y -> fromSmallInt x * fromSmallInt y == fromInt (runSmallInt x * runSmallInt y))
+
+  log "It should perform multiplications which would lead to imprecise results using Number"
+  assert $ Just (fromInt 333190782 * fromInt 1103515245) == fromString "367681107430471590"
+
+  log "compare, (==), even, odd should be the same before and after converting to BigInt"
+  quickCheck (\x y -> compare x y == compare (fromInt x) (fromInt y))
+  quickCheck (\x y -> (fromSmallInt x == fromSmallInt y) == (runSmallInt x == runSmallInt y))
+
   log "pow should perform integer exponentiation and yield 0 for negative exponents"
   assert $ three `pow` four == fromInt 81
-  assert $ three `pow` (-two) == zero
+  assert $ three `pow` -two == zero
   assert $ three `pow` zero == one
   assert $ zero `pow` zero == one
 
@@ -120,14 +206,27 @@ main = do
   assert $ asIntN 8 (fromInt 255) == fromInt (-1)
   assert $ asIntN 8 (fromInt (-129)) == fromInt 127
 
-  log "compare, (==), even, odd should be the same before and after converting to BigInt"
-  assert $ compare (fromInt 2) (fromInt 3) == compare 2 3
-  assert $ fromInt 4 == fromInt 4
-  assert $ fromInt 4 /= fromInt 5
-  assert $ even (fromInt 42)
-  assert $ odd (fromInt 42) == false
-  assert $ odd (fromInt 31)
-  assert $ even (fromInt 31) == false
+  let prxBigInt = Proxy :: Proxy TestBigInt
+  Data.checkEq prxBigInt
+  Data.checkOrd prxBigInt
+  Data.checkSemiring prxBigInt
+  Data.checkRing prxBigInt
+  Data.checkCommutativeRing prxBigInt
+  -- The JavaScript wrapper's `degree` returned a BigInt for the declared
+  -- `Int` result; the native port saturates at the 64-bit carrier. Run the
+  -- Euclidean law where the degree comparisons are exact...
+  Data.checkEuclideanRingGen (testBigIntGen 18)
+  -- ... and keep the quotient/remainder identity over the full generated
+  -- range, which only needs exact magnitudes.
+  quickCheck
+    \(TestBigInt a) (TestBigInt b) ->
+      b == zero
+        || ( let
+               q = a / b
+               r = a `mod` b
+             in
+               a == q * b + r && (r == zero || abs r < abs b)
+           )
 
   log "Converting BigInt to Int"
   assert $ (fromString "0" >>= toInt) == Just 0
@@ -140,8 +239,10 @@ main = do
   assert $ toString (fromTLInt (Proxy :: Proxy 921231231322337203685124775809)) == "921231231322337203685124775809"
   assert $ toString (fromTLInt (Proxy :: Proxy (-921231231322337203685124775809))) == "-921231231322337203685124775809"
 
+  log "Parity"
+  assert $ even (fromInt 42)
+  assert $ odd (fromInt 42) == false
+  assert $ odd (fromInt 31)
+  assert $ even (fromInt 31) == false
+
   log "Tests passed"
-  where
-  fromString' text = case fromString text of
-    Just value -> value
-    Nothing -> zero
