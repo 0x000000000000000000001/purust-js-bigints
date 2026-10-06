@@ -11,3 +11,4 @@ output.bak/
 /.spago
 /package-lock.json
 .purmeta/
+.DS_Store
